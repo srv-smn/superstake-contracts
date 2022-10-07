@@ -29,7 +29,7 @@ interface Staking_Standard {
 }
 
 // adding modifiers is pending
-contract SuperStakeV2 {
+contract SuperStake {
     struct stake{
         uint amount;
         uint withdrawTime;
