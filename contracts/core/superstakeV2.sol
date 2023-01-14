@@ -1,32 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-interface ERC20 {
-    
-    function totalSupply() external view returns (uint256);
-
-    function balanceOf(address account) external view returns (uint256);
-
-    function transfer(address recipient, uint256 amount) external returns (bool);
-
-    function allowance(address owner, address spender) external view returns (uint256);
-
-    function approve(address spender, uint256 amount) external returns (bool);
-
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-}
-
-interface Staking_Standard {
-
-    function deposit(address tokenAddress,address userAddress, uint256 amount) external;
-    function withdraw(address tokenAddress,address userAddress, uint256 amount) external ;
-    function pendingReward(address account) external view returns (uint256);
-    function autoCompound(address tokenAddress, uint256 amount) external returns (uint256) ;
-}
+import "../interface/IERC20.sol";
+import "../interface/StakingStandard.sol";
 
 // adding modifiers is pending
 contract SuperStakeV2 {
@@ -60,7 +36,7 @@ contract SuperStakeV2 {
 
         // balances(user => token => struct[])
         balances[msg.sender][tokenAddress[index]].push(stkDetails); // TBD in specific code block
-        ERC20 token = ERC20(tokenAddress[index]);
+        IERC20 token = IERC20(tokenAddress[index]);
         token.transferFrom(msg.sender, protocols[tokenAddress[index]], amount[index]); // TBD in specific code block
 
         Staking_Standard( protocols[tokenAddress[index]]).deposit(tokenAddress[index],msg.sender, amount[index]);
@@ -103,6 +79,10 @@ contract SuperStakeV2 {
     function changeStakeStatus(address _token, bool _stake, bool _unstake) public{
         isStakingAllowed[_token] = _stake;
         isUnstakingAllowed[_token] = _unstake;
+    }
+    
+    function getStakingLength(address _user, address _token) public view returns(uint){
+        return balances[_user][_token].length;
     }
 
 
